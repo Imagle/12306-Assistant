@@ -1,6 +1,6 @@
 /*
   12306 Assistant
-  Copyright (C) 2012 flytreeleft (flytreeleft@126.com)
+  Copyright (C) 2012 flytreeleft (flytreeleft@126.com),Ruiqiang(swagle@163.com)
 
   THANKS:
   Hidden, Jingqin Lynn, Kevintop
@@ -31,7 +31,30 @@ $(document).ready(function() {
 			notify($(this).attr('message'));
 		}
 	});
+	
+	chrome.extension.sendRequest({action: 'login'}, function(response) {
+		$("#UserName").val(response.name);
+		$("#password").val(response.password);	
+	});
+	
+	chrome.extension.sendRequest( { action: 'query'}, function(response) {
 
+		//设置出发车站
+		$("#fromStationText").val(response.fromStationText);
+		$("#fromStation").val(response.fromStationCode);
+		
+		//设置目的车站
+		$("#toStationText").val(response.toStationText);
+		$("#toStation").val(response.toStationCode);
+		
+		
+		
+		//设置出发日期
+		$('#startdatepicker').val(response.startDate);
+		//设置出发车次
+		$('#trainCode').val(response.trainNo);	
+	});
+	
 	if ($('head title').html() == '登录') {
 		if ($('head').html().match(/var\s+isLogin\s*=\s*true/g)) {
 			// 已经登录,则直接跳转到查询页面
@@ -55,7 +78,9 @@ function play(type) {
 function login(user) {
 	$('body').append(
 		$('<script type="text/javascript" src="'+chrome.extension.getURL('12306/login.js')+'"/>')
-	).bind({
+	)
+
+	.bind({
 		'loginSuccess': function() {
 			notify('登录成功,开始查询车票吧!');
 			play('login');

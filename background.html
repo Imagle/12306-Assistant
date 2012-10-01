@@ -1,6 +1,6 @@
 <!--
   12306 Assistant
-  Copyright (C) 2012 flytreeleft (flytreeleft@126.com)
+  Copyright (C) 2012 flytreeleft (flytreeleft@126.com),Ruiqiang(swagle@163.com)
   
   THANKS:
   Hidden, Jingqin Lynn, Kevintop
@@ -26,9 +26,13 @@
 -->
 
 <html>
+<script type="text/javascript" src="./jquery.min.js"></script>
+
+
 <script type="text/javascript">
 var user = {name:'', password:''};
-var ticket = {fromStation:'', toStation:'', startDate:'', trainNo:''};
+var ticket = {fromStationText:'', fromStationCode:'', toStationText:'', toStationCode:'', startDate:'', trainNo:''};
+
 var notifyIcons = {
 	'default': './images/default.ico'
 };
@@ -88,6 +92,7 @@ function play(type) {
 }
 
 function init() {
+	
 	chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		var action = request ? request.action : '';
 		
@@ -95,10 +100,17 @@ function init() {
 			notify(request.msg, request.type, request.delay);
 		} else if (action == 'play') {
 			play(request.type);
-		} else {
-			sendResponse();
+		} else if (request.action == 'login'){
+			sendResponse({ name:user.name, password: user.password});
+		} else if(request.action == 'query'){
+			sendResponse({ fromStationText: ticket.fromStationText, fromStationCode:ticket.fromStationCode,
+							toStationText: ticket.toStationText, toStationCode: ticket.toStationCode,
+							startDate: ticket.startDate, trainNo: ticket.trainNo
+						});
+		}else{
+			sendResponse({});
 		}
-	});
+	});	
 }
 </script>
 <body onload="init();"></body>
